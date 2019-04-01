@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName 'admin'
+AuthUserFile /var/www/domains/b/bb/bbe/bbee.kl.com.ua/admin/.htpasswd
+Require user 'admin'
+require valid-user

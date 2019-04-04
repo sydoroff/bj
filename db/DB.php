@@ -9,10 +9,10 @@
 class DB
 {
     const TYPE_DB = 'mysql';
-    const HOST_DB = 'mysql.zzz.com.ua';
-    const NAME_DB = 'beejeet';
-    const USER_DB = 'beetaskjee';
-    const PASS_DB = 'QQwwee112233';
+    const HOST_DB = 'localhost';
+    const NAME_DB = 'task';
+    const USER_DB = 'root';
+    const PASS_DB = '';
 
     static function connect_db(){
         $opt = [

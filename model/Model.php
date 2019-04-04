@@ -1,6 +1,7 @@
 <?php
 
 require_once ($_SERVER['DOCUMENT_ROOT'].'/db/DB.php');
+require_once ($_SERVER['DOCUMENT_ROOT'].'/lib/pagination.php');
 
 class Model
 {
@@ -9,7 +10,7 @@ class Model
     private $db;
     private $scope = null;
     private $order = ['query' => null, 'field' => null, 'dir' => null];
-    private $paginate = ['query' => null, 'param' => null];
+    private $paginate = ['query' => null, 'param' => null,'pages' => null];
     private $columns = null;
 
     function  __construct(){
@@ -24,6 +25,7 @@ class Model
     function all(){
            $q = $this->db->query('select * from '.
                 $this->name.' '.
+                $this->scope.
                 $this->order['query'].
                 $this->paginate['query']);
 
@@ -31,8 +33,10 @@ class Model
 
            $q['row'] = $q;
 
-           if(!empty($this->paginate['param']))
+           if(!empty($this->paginate['param'])){
             $q['pagination'] = $this->paginate['param'];
+            $q['pagination']['pages'] = $this->paginate['pages'];
+           }
 
            if(!empty($this->order)){
                $q['order']['field'] = $this->order['field'];
@@ -69,6 +73,8 @@ class Model
         $q['count']        = $all[0]['count(id)'];
         $this->paginate['param'] = $q;
 
+        $this->paginate['pages'] = pagination_render($q,['sort' => $this->order['field'], 'dir' => $this->order['dir']],$count);
+
         return $this;
     }
 
@@ -90,7 +96,7 @@ class Model
     }
 
     function scope ($scope){
-        $this->scope=' '.$scope.' ';
+        $this->scope.=' '.$scope.' ';
         return $this;
     }
 

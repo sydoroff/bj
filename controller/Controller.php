@@ -1,12 +1,10 @@
 ﻿<?php
-/**
- * Created by PhpStorm.
- * User: юзер
- * Date: 31.03.2019
- * Time: 17:29
- */
+
+
+
 require_once ($_SERVER['DOCUMENT_ROOT'].'/model/Task.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/lib/recaptcha.php');
+require_once ($_SERVER['DOCUMENT_ROOT'].'/lib/myFunction.php');
 
 class Controller{
 
@@ -24,9 +22,14 @@ class Controller{
 
         $task=$task->order($_GET['sort'],$_GET['dir'])->paginate($_GET['page'],$_GET['count'])->all();
 
-        $mainHTML = include $_SERVER['DOCUMENT_ROOT'].'/view/'.$content.'.php';
-        $mainHTML .= include $_SERVER['DOCUMENT_ROOT'].'/view/pagination.php';
-        $this->html = include $_SERVER['DOCUMENT_ROOT'].'/view/app.php';
+        $sort_dir = ['id' => 'asc',
+            'name' => 'asc',
+            'email' => 'asc',
+            'status' => 'asc'];
+
+        if ($sort_dir[$_GET['sort']] === $_GET['dir']) $sort_dir[$_GET['sort']] = 'desc';
+
+        $this->html = $this->view($content,['task' => $task, 'sort_dir' => $sort_dir]);
 
         return $this;
     }
@@ -73,19 +76,23 @@ class Controller{
                             urlencode($ins['hash'])."&id=".
                             urlencode(password_hash($id,PASSWORD_BCRYPT))."'>";
                         mail($ins['email'],'New task. No reply.',$txt);
-                        header('Location: http://bbee.kl.com.ua/?sort=id&dir=desc');
+                       // exit();
+                        header('Location: http://bj/?sort=id&dir=desc');
                 }
             }
         }
 
-        if($error)
-        foreach($error as $row){
-            $mainHTML.= "<div class=\"alert alert-danger\" role=\"alert\">$row</div>";
-        }
-
-        $mainHTML.= include $_SERVER['DOCUMENT_ROOT'].'/view/form.php';
-        $this->html = include $_SERVER['DOCUMENT_ROOT'].'/view/app.php';
+        $this->html = $this->view('form',['post' => $_POST, 'error' => $error]);
         return $this;
+    }
+
+    function view($name,$arr = []){
+        require_once ($_SERVER['DOCUMENT_ROOT'].'/lib/Twig/Autoloader.php');
+        Twig_Autoloader::register();
+        $loader = new Twig_Loader_Filesystem($_SERVER['DOCUMENT_ROOT'].'/view/');
+        $twig = new Twig_Environment($loader);
+        $twig->addFunction('email_render', new Twig_Function_Function('email_render'));
+        return $twig->render($name.'.twig.php', $arr);
     }
 
     function run(){

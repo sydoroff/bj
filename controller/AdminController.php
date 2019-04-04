@@ -20,20 +20,13 @@ class AdminController extends Controller
                 if ($_POST['status']!='1')
                     $_POST['status']='0';
                 $task->update($_GET['id'],$_POST['text'],$_POST['status']);
-                header('Location: http://bbee.kl.com.ua/admin/edit.php?id='.$_GET['id'].'&rand='.rand(1000,9999));
+                header('Location: http://'.$_SERVER['HTTP_HOST'].'/admin/edit.php?id='.$_GET['id'].'&rand='.rand(1000,9999));
             }
 
-
-
-            $mainHTML.= include $_SERVER['DOCUMENT_ROOT'].'/view/admin-form.php';
-
-            if(isset($_GET['rand']))
-                $mainHTML.= "<div class=\"alert alert-success\" role=\"alert\">Все хорошо</div>";
-
-            $this->html = include $_SERVER['DOCUMENT_ROOT'].'/view/app.php';
+            $this->html = $this->view('admin-form',['fill' => $fill, 'rand' => $_GET['rand']]);
         }
         else
-            header('Location: http://bbee.kl.com.ua/admin/index.php');
+            header('Location: http://'.$_SERVER['HTTP_HOST'].'/admin/index.php');
 
         return $this;
     }

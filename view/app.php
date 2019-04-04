@@ -1,6 +1,4 @@
-﻿<?php
-$html = <<<MYHTML
-<!doctype html>
+﻿<!doctype html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
@@ -26,7 +24,7 @@ $html = <<<MYHTML
     </div>
     <div class="container">
 
-    $mainHTML
+        {% block content %}{% endblock %}
 
     </div>
 
@@ -37,6 +35,3 @@ $html = <<<MYHTML
 
 </body>
 </html>
-MYHTML;
-
-return $html;

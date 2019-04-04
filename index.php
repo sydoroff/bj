@@ -6,9 +6,9 @@
  * Time: 13:40
  */
 
-require_once ('./controller/Controller.php');
+require_once ('./controller/IndexController.php');
 
-$cont = new Controller;
+$cont = new IndexController;
 
 $cont->index()->run();
 

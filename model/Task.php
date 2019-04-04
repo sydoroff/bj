@@ -21,4 +21,10 @@ class Task extends Model{
                $q->bindValue(3, $id);
         return $q->execute();
     }
+
+    function verify($id){
+               $q = $this->db()->prepare('UPDATE  '.$this->getNmae().' SET verified = \'1\' where id = ?');
+               $q->bindValue(1, $id);
+        return $q->execute();
+    }
 }

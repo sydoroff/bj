@@ -38,7 +38,7 @@ class Model
             $q['pagination']['pages'] = $this->paginate['pages'];
            }
 
-           if(!empty($this->order)){
+           if(!empty($this->order['query'])){
                $q['order']['field'] = $this->order['field'];
                $q['order']['dir'] = $this->order['dir'];
            }
@@ -57,7 +57,7 @@ class Model
     function paginate($page = 1,$count = 3){
         if ($count<3) $count=3;
         if ($page<1) $page=1;
-        $all = $this->db->query('select count('.$this->columns[0].') from '.$this->name)->fetchAll();
+        $all = $this->db->query('select count('.$this->columns[0].') from '.$this->name.$this->scope)->fetchAll();
         if ($all[0]['count(id)']>$count)
             $last = intval($all[0]['count(id)']/$count)+1;
         else
@@ -96,6 +96,10 @@ class Model
     }
 
     function scope ($scope){
+        if (!empty($this->scope))
+            $this->scope.= ' and ';
+        else
+            $this->scope.= ' where ';
         $this->scope.=' '.$scope.' ';
         return $this;
     }

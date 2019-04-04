@@ -4,11 +4,43 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th scope="col"><a class="text-dark" href="/?sort=id&dir={{sort_dir['id']}}"># </a></th>
-        <th scope="col"><a class="text-dark" href="/?sort=name&dir={{sort_dir['name']}}">Имя</a></th>
-        <th scope="col"><a class="text-dark" href="/?sort=email&dir={{sort_dir['email']}}">Почта</a></th>
+        <th scope="col"><a class="text-dark" href="/?sort=id&dir={{sort_dir['id']}}"># </a>
+        {%if sort['id']%}
+            {%if sort['id']=='asc'%}
+                &#9660;
+            {%else%}
+                &#9650;
+            {%endif%}
+        {%endif%}
+        </th>
+        <th scope="col"><a class="text-dark" href="/?sort=name&dir={{sort_dir['name']}}">Имя</a>
+        {%if sort['name']%}
+            {%if sort['name']=='asc'%}
+                &#9660;
+            {%else%}
+                &#9650;
+            {%endif%}
+        {%endif%}
+        </th>
+        <th scope="col"><a class="text-dark" href="/?sort=email&dir={{sort_dir['email']}}">Почта</a>
+        {%if sort['email']%}
+            {%if sort['email']=='asc'%}
+                &#9660;
+            {%else%}
+                &#9650;
+            {%endif%}
+        {%endif%}
+        </th>
         <th scope="col"><a class="text-dark" href="#">Задача</a></th>
-        <th scope="col" class="w-5"><a class="text-dark" href="/?sort=status&dir={{sort_dir['status']}}">Выполнение</a></th>
+        <th scope="col" class="w-5"><a class="text-dark" href="/?sort=status&dir={{sort_dir['status']}}">Выполнение</a>
+        {%if sort['status']%}
+            {%if sort['status']=='asc'%}
+                &#9660;
+            {%else%}
+                &#9650;
+            {%endif%}
+        {%endif%}
+        </th>
     </tr>
     </thead>
     <tbody>

@@ -1,7 +1,7 @@
 ﻿<?php
-require_once ('Controller.php');
+require_once ('IndexController.php');
 
-class AdminController extends Controller
+class AdminController extends IndexController
 {
     function index($content = 'table')
     {
@@ -23,7 +23,7 @@ class AdminController extends Controller
                 header('Location: http://'.$_SERVER['HTTP_HOST'].'/admin/edit.php?id='.$_GET['id'].'&rand='.rand(1000,9999));
             }
 
-            $this->html = $this->view('admin-form',['fill' => $fill, 'rand' => $_GET['rand']]);
+            $this->HTML($this->view('admin-form',['fill' => $fill, 'rand' => $_GET['rand']]));
         }
         else
             header('Location: http://'.$_SERVER['HTTP_HOST'].'/admin/index.php');

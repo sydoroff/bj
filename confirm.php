@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: юзер
- * Date: 31.03.2019
- * Time: 21:44
- */
+
 if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
     ob_start(null, 0, PHP_OUTPUT_HANDLER_STDFLAGS ^
         PHP_OUTPUT_HANDLER_REMOVABLE);
@@ -16,6 +11,6 @@ require_once ('./controller/IndexController.php');
 
 $cont = new IndexController;
 
-$cont->newTask()->run();
+$cont->confirm()->run();
 
 ob_flush();

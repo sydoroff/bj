@@ -1,4 +1,4 @@
-{% extends 'app.php' %}
+{% extends 'app.twig.php' %}
 {% block content %}
 <div class="row">
 <table class="table table-striped">

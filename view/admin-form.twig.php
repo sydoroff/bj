@@ -1,4 +1,4 @@
-{% extends 'app.php' %}
+{% extends 'app.twig.php' %}
 {% block content %}
 
 {%if rand %}
@@ -16,7 +16,7 @@
     </div>
     <div class="form-group">
         <label for="exampleFormControlTextarea1">Example textarea</label>
-        <textarea name="text" class="form-control" id="exampleFormControlTextarea1" rows="5"  placeholder="Текст Вашего задания" required>{{fill['text']}}</textarea>
+        <textarea name="text" class="form-control" id="exampleFormControlTextarea1" rows="5"  placeholder="Текст Вашего задания" required>{{fill['text']|raw}}</textarea>
     </div>
 
     <div class="form-check">

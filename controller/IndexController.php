@@ -7,8 +7,19 @@
  */
 require_once ('Controller.php');
 
+/**
+ * Class IndexController - user part
+ */
 class IndexController extends Controller
 {
+    /**
+     * Generated index page for admin and user
+     * @param string $content
+     * @return $this
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
+     */
     function index($content = 'table'){
 
         $task = new Task();
@@ -18,9 +29,6 @@ class IndexController extends Controller
         if(!in_array($_GET['sort'],$task->getFields())) $_GET['sort'] = 'id';
         if(!in_array($_GET['dir'],['asc','desc'])) $_GET['dir'] = 'asc';
 
-        if($content === 'table')
-            $task=$task->scope(' verified = 1  ');
-
         $task=$task->order($_GET['sort'],$_GET['dir'])
             ->paginate($_GET['page'],$_GET['count'])
             ->all();
@@ -29,7 +37,6 @@ class IndexController extends Controller
             'name' => 'asc',
             'email' => 'asc',
             'status' => 'asc',
-            'verified' => 'asc'
         ];
 
         if ($sort_dir[$_GET['sort']] === $_GET['dir']) $sort_dir[$_GET['sort']] = 'desc';
@@ -41,20 +48,20 @@ class IndexController extends Controller
         return $this;
     }
 
+    /**
+     * Add new task page
+     * @return $this
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
+     */
     function newTask(){
 
         $error = null;
 
-        if ($_POST["g-recaptcha-response"]) {
-            $secret = "6LcoKpsUAAAAANC4U1U-BMfN_U0aE1X5GZlCY8Ad";
-            $response = null;
-            $reCaptcha = new ReCaptcha($secret);
-            $response = $reCaptcha->verifyResponse(
-                $_SERVER["REMOTE_ADDR"],
-                $_POST["g-recaptcha-response"]
-            );
+            if ($_POST['submit']==1) {
 
-            if ($response != null && $response->success) {
+                if(!check_captcha()) $error[]='Пройдите проверку капчи!!!';
 
                 if (check_email($_POST['email']))
                     $email=$_POST['email'];
@@ -62,12 +69,12 @@ class IndexController extends Controller
                     $error[]= 'Email введен неверно!!!';
 
                 if (!empty(trim($_POST['name'])))
-                    $name=htmlspecialchars(strip_tags(trim($_POST['name'])));
+                    $name=htmlspecialchars(strip_tags(trim($_POST['name'])),ENT_QUOTES);
                 else
                     $error[]='Введите имя!!!';
 
                 if (!empty(trim($_POST['text'])))
-                    $text=htmlspecialchars(strip_tags(trim($_POST['text'])));
+                    $text=htmlspecialchars(strip_tags(trim($_POST['text'])),ENT_QUOTES);
                 else
                     $error[]='Введите задание!!!';
 
@@ -76,35 +83,38 @@ class IndexController extends Controller
                     $id = $task->create(['name' => $name, 'email' => $email, 'text' => $text]);
 
                     $ins = $task->find($id);
-
-                    send_confirm_mail($ins['email'],$ins['hash'],$id);
                 }
-            }else
-                header('Location: http://'.$_SERVER['HTTP_HOST'].'/?sort=id&dir=desc');
-        }
-        if(isset($ins))
-            $this->HTML($this->view('ok', ['email' => $ins['email']]));
-        else
+            }
+
+        if(empty($ins))
             $this->HTML($this->view('form',['post' => $_POST, 'error' => $error]));
+        else
+            header('Location: http://'.$_SERVER['HTTP_HOST'].'/confirm.php?key='.urlencode($ins['hash']).
+                    '&id='.urlencode(md5($ins['id'])));
 
         return $this;
     }
 
+    /**
+     * Congratulation page
+     * @return $this
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
+     */
     function confirm(){
-        if(isset($_GET['key'])&&isset($_GET['id'])){
+        if(isset($_GET['key'])){
             $task = new Task();
-            $q = $task->scope("hash = '".htmlspecialchars(strip_tags(urldecode($_GET['key'])))."'")->all();
-            if (count($q['row'])==1){
-                if ((md5($q[0]['id'])==urldecode($_GET['id']))&&$q[0]['verified']!=1){
-                    $res=$task->verify($q[0]['id']);
-                }
-            }
+            $q = $task->
+                scope("hash = '".htmlspecialchars(strip_tags(urldecode($_GET['key'])),ENT_QUOTES)."'")
+                ->all();
+
+            if(md5($q['row'][0]['id'])==urldecode($_GET['id']))
+                $this->HTML($this->view('hello',['id' => $q['row'][0]['id']]));
+            return $this;
         }
 
-        if(isset($res))
-            $this->HTML($this->view('hello',['id' => $q[0]['id']]));
-        else
-            header('Location: http://'.$_SERVER['HTTP_HOST'].'/?sort=id&dir=desc');
+        header('Location: http://'.$_SERVER['HTTP_HOST'].'/?sort=id&dir=desc');
 
         return $this;
     }

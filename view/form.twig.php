@@ -1,4 +1,4 @@
-{% extends 'app.php' %}
+{% extends 'app.twig.php' %}
 {% block content %}
 
 {% for err in error %}
@@ -22,6 +22,6 @@
 
       <div class="g-recaptcha" data-sitekey="6LcoKpsUAAAAABW65v3JTOXk_EajujvcTWseV8YY"></div>
       <br/>
-      <button type="submit" class="btn btn-primary mb-2">Отправить</button>
+      <button type="submit" class="btn btn-primary mb-2" name="submit" value="1">Отправить</button>
 </form>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'app.php' %}
+{% extends 'app.twig.php' %}
 {% block content %}
 <div class="row">
 <table class="table table-striped">
@@ -41,15 +41,6 @@
             {%endif%}
         {%endif%}
         </th>
-        <th scope="col" class="w-5"><a class="text-dark" href="?sort=verified&dir={{sort_dir['verified']}}">Активно</a>
-        {%if sort['verified']%}
-            {%if sort['verified']=='asc'%}
-                &#9660;
-            {%else%}
-                &#9650;
-            {%endif%}
-        {%endif%}
-        </th>
     </tr>
     </thead>
     <tbody>
@@ -64,13 +55,6 @@
                 <span class="text-success">Выполненно</span>
             {%else%}
                 <span class="text-danger">Нет</span>
-            {%endif%}
-        </td>
-        <td>
-            {%if row['verified']==1%}
-            <span class="text-success">Активно</span>
-            {%else%}
-            <span class="text-danger">Нет</span>
             {%endif%}
         </td>
     </tr>

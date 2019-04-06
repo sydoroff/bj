@@ -1,4 +1,4 @@
-{% extends 'app.php' %}
+{% extends 'app.twig.php' %}
 {% block content %}
 
 <div class="alert alert-success" role="alert">

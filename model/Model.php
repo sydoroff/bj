@@ -3,7 +3,11 @@
 require_once ($_SERVER['DOCUMENT_ROOT'].'/db/DB.php');
 require_once ($_SERVER['DOCUMENT_ROOT'].'/lib/pagination.php');
 
-class Model
+/**
+ * Class Model - main Query Processing
+ * Name of DB table this is Class Name
+ */
+abstract class Model
 {
 
     private $name;
@@ -22,6 +26,11 @@ class Model
              }
     }
 
+    /**
+     * @return array like ['row' => array() of model rows, 'pagination' => array() of pagination parameters,
+     *                     'order' =>  array() of order parameters]
+     */
+
     function all(){
            $q = $this->db->query('select * from '.
                 $this->name.' '.
@@ -31,21 +40,25 @@ class Model
 
            $q=$q->fetchAll();
 
-           $q['row'] = $q;
+           $qr['row'] = $q;
 
            if(!empty($this->paginate['param'])){
-            $q['pagination'] = $this->paginate['param'];
-            $q['pagination']['pages'] = $this->paginate['pages'];
+            $qr['pagination'] = $this->paginate['param'];
+            $qr['pagination']['pages'] = $this->paginate['pages'];
            }
 
            if(!empty($this->order['query'])){
-               $q['order']['field'] = $this->order['field'];
-               $q['order']['dir'] = $this->order['dir'];
+               $qr['order']['field'] = $this->order['field'];
+               $qr['order']['dir'] = $this->order['dir'];
            }
 
-           return $q;
+           return $qr;
     }
 
+    /**
+     * @param $id - number id in table
+     * @return array - model fields
+     */
     function find($id){
         $q = $this->db->prepare('select * from '.$this->name.' where id = ?');
         $q->bindValue(1, $id, PDO::PARAM_INT);
@@ -54,12 +67,18 @@ class Model
         return $q[0];
     }
 
+    /**
+     * set paginate parameters
+     * @param int $page
+     * @param int $count
+     * @return $this
+     */
     function paginate($page = 1,$count = 3){
         if ($count<3) $count=3;
         if ($page<1) $page=1;
         $all = $this->db->query('select count('.$this->columns[0].') from '.$this->name.$this->scope)->fetchAll();
         if ($all[0]['count(id)']>$count)
-            $last = intval($all[0]['count(id)']/$count)+1;
+            $last = ceil($all[0]['count(id)']/$count);
         else
             $last = 1;
 
@@ -78,6 +97,12 @@ class Model
         return $this;
     }
 
+    /**
+     * set order parameters
+     * @param $field
+     * @param $dir
+     * @return $this
+     */
     function order($field,$dir){
 
         if (in_array($field,$this->columns)){
@@ -95,6 +120,12 @@ class Model
         return $this;
     }
 
+    /**
+     * set where parameter in query - not safe
+     * should be called at first part
+     * @param $scope
+     * @return $this
+     */
     function scope ($scope){
         if (!empty($this->scope))
             $this->scope.= ' and ';
@@ -104,15 +135,24 @@ class Model
         return $this;
     }
 
+    /**
+     * @return PDO - connection
+     */
     function db(){
         return $this->db;
     }
 
-    function getNmae()
+    /**
+     * @return string - Class Name
+     */
+    function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return null - Fields of Table
+     */
     function getFields(){
         return $this->columns;
     }
